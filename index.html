@@ -1,980 +1,219 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tokens / Watt / User Simulator</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Token Watt User Simulator</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
-/* ─── DESIGN TOKENS ─── */
-:root {
-  --text-xs:   clamp(0.75rem,  0.7rem  + 0.25vw, 0.875rem);
-  --text-sm:   clamp(0.875rem, 0.8rem  + 0.35vw, 1rem);
-  --text-base: clamp(1rem,     0.95rem + 0.25vw, 1.125rem);
-  --text-lg:   clamp(1.125rem, 1rem    + 0.75vw, 1.5rem);
-  --text-xl:   clamp(1.5rem,   1.2rem  + 1.25vw, 2.25rem);
-
-  --space-1:  0.25rem;
-  --space-2:  0.5rem;
-  --space-3:  0.75rem;
-  --space-4:  1rem;
-  --space-5:  1.25rem;
-  --space-6:  1.5rem;
-  --space-8:  2rem;
-  --space-10: 2.5rem;
-  --space-12: 3rem;
-  --space-16: 4rem;
-
-  --radius-sm: 0.375rem;
-  --radius-md: 0.5rem;
-  --radius-lg: 0.75rem;
-  --radius-xl: 1rem;
-  --radius-full: 9999px;
-
-  --transition-interactive: 180ms cubic-bezier(0.16, 1, 0.3, 1);
-
-  --font-body:    'Inter', 'Helvetica Neue', sans-serif;
-  --font-mono:    'JetBrains Mono', 'Courier New', monospace;
-
-  --content-wide: 1400px;
+:root{
+  --text-xs:clamp(.75rem,.72rem+.2vw,.86rem);
+  --text-sm:clamp(.875rem,.84rem+.25vw,1rem);
+  --text-base:clamp(1rem,.97rem+.2vw,1.08rem);
+  --text-lg:clamp(1.125rem,1rem+.6vw,1.35rem);
+  --text-xl:clamp(1.6rem,1.2rem+1.2vw,2.5rem);
+  --space-1:.25rem;--space-2:.5rem;--space-3:.75rem;--space-4:1rem;--space-5:1.25rem;--space-6:1.5rem;--space-8:2rem;--space-10:2.5rem;--space-12:3rem;
+  --radius-sm:.5rem;--radius-md:.8rem;--radius-lg:1rem;--radius-xl:1.35rem;--radius-pill:999px;
+  --font-body:'Inter',sans-serif;--font-mono:'JetBrains Mono',monospace;
+  --transition:180ms cubic-bezier(.16,1,.3,1);
+  --bg:#07090d;--surface:#10141b;--surface-2:#131a22;--surface-3:#19212c;--border:#263140;--divider:#1c2430;
+  --text:#edf2f7;--muted:#9ca9bb;--faint:#617086;
+  --primary:#25d7ff;--primary-2:#00b7d8;--primary-dim:rgba(37,215,255,.13);
+  --success:#22d3a4;--success-dim:rgba(34,211,164,.14);--warning:#f59e0b;
+  --shadow-sm:0 8px 20px rgba(0,0,0,.22);--shadow-md:0 18px 45px rgba(0,0,0,.34);--glow:0 0 0 1px rgba(37,215,255,.18),0 0 32px rgba(37,215,255,.08);
 }
-
-/* ─── DARK MODE (default) ─── */
-:root, [data-theme="dark"] {
-  --color-bg:               #0d0e10;
-  --color-surface:          #131519;
-  --color-surface-2:        #181b1f;
-  --color-surface-offset:   #1d2026;
-  --color-surface-dynamic:  #242830;
-  --color-divider:          #252830;
-  --color-border:           #2d3140;
-
-  --color-text:             #e2e4e9;
-  --color-text-muted:       #8890a0;
-  --color-text-faint:       #4a5060;
-  --color-text-inverse:     #0d0e10;
-
-  --color-primary:          #00d4e8;
-  --color-primary-hover:    #00b8d0;
-  --color-primary-active:   #009ab0;
-  --color-primary-dim:      rgba(0, 212, 232, 0.12);
-  --color-primary-glow:     rgba(0, 212, 232, 0.2);
-
-  --color-accent:           #7c3aed;
-  --color-accent-hover:     #6d28d9;
-  --color-accent-dim:       rgba(124, 58, 237, 0.15);
-
-  --color-success:          #22d3a4;
-  --color-success-dim:      rgba(34, 211, 164, 0.12);
-
-  --color-warning:          #f59e0b;
-  --color-warning-dim:      rgba(245, 158, 11, 0.12);
-
-  --color-error:            #f43f5e;
-
-  --shadow-sm:  0 1px 3px rgba(0,0,0,0.4);
-  --shadow-md:  0 4px 16px rgba(0,0,0,0.5);
-  --shadow-lg:  0 12px 40px rgba(0,0,0,0.6);
-  --shadow-glow: 0 0 24px rgba(0, 212, 232, 0.15);
-}
-
-[data-theme="light"] {
-  --color-bg:               #f4f5f7;
-  --color-surface:          #ffffff;
-  --color-surface-2:        #f8f9fa;
-  --color-surface-offset:   #f0f2f5;
-  --color-surface-dynamic:  #e8eaed;
-  --color-divider:          #e2e5ea;
-  --color-border:           #d0d5df;
-
-  --color-text:             #1a1d24;
-  --color-text-muted:       #5a6070;
-  --color-text-faint:       #9aa0b0;
-  --color-text-inverse:     #ffffff;
-
-  --color-primary:          #0066cc;
-  --color-primary-hover:    #0052a3;
-  --color-primary-active:   #003d7a;
-  --color-primary-dim:      rgba(0, 102, 204, 0.1);
-  --color-primary-glow:     rgba(0, 102, 204, 0.15);
-
-  --color-accent:           #7c3aed;
-  --color-accent-hover:     #6d28d9;
-  --color-accent-dim:       rgba(124, 58, 237, 0.1);
-
-  --color-success:          #059669;
-  --color-success-dim:      rgba(5, 150, 105, 0.1);
-
-  --color-warning:          #d97706;
-  --color-warning-dim:      rgba(217, 119, 6, 0.1);
-
-  --color-error:            #e11d48;
-
-  --shadow-sm:  0 1px 3px rgba(0,0,0,0.08);
-  --shadow-md:  0 4px 16px rgba(0,0,0,0.10);
-  --shadow-lg:  0 12px 40px rgba(0,0,0,0.14);
-  --shadow-glow: 0 0 24px rgba(0, 102, 204, 0.12);
-}
-
-/* ─── BASE ─── */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { -webkit-font-smoothing: antialiased; scroll-behavior: smooth; }
-body {
-  font-family: var(--font-body);
-  font-size: var(--text-base);
-  color: var(--color-text);
-  background: var(--color-bg);
-  min-height: 100dvh;
-  line-height: 1.6;
-  transition: background var(--transition-interactive), color var(--transition-interactive);
-}
-button { cursor: pointer; background: none; border: none; font: inherit; color: inherit; }
-input { font: inherit; color: inherit; }
-img { display: block; max-width: 100%; }
-
-/* ─── LAYOUT ─── */
-.app-shell {
-  max-width: var(--content-wide);
-  margin: 0 auto;
-  padding: var(--space-6) var(--space-6) var(--space-16);
-}
-
-/* ─── TOP BAR ─── */
-.topbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--space-4) 0 var(--space-8);
-  border-bottom: 1px solid var(--color-divider);
-  margin-bottom: var(--space-8);
-  gap: var(--space-4);
-  flex-wrap: wrap;
-}
-.topbar-brand {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-}
-.topbar-logo {
-  width: 36px;
-  height: 36px;
-  flex-shrink: 0;
-}
-.topbar-title {
-  font-family: var(--font-mono);
-  font-size: var(--text-sm);
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  color: var(--color-text-muted);
-  text-transform: uppercase;
-}
-.topbar-actions { display: flex; align-items: center; gap: var(--space-3); }
-
-.btn-icon {
-  display: flex; align-items: center; justify-content: center;
-  width: 36px; height: 36px;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--color-border);
-  background: var(--color-surface);
-  color: var(--color-text-muted);
-  transition: all var(--transition-interactive);
-}
-.btn-icon:hover { color: var(--color-text); border-color: var(--color-text-muted); }
-
-/* ─── SECTION HEAD ─── */
-.section-head {
-  margin-bottom: var(--space-8);
-}
-.eyebrow {
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  font-weight: 600;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--color-primary);
-  margin-bottom: var(--space-2);
-}
-.section-title {
-  font-size: var(--text-xl);
-  font-weight: 700;
-  color: var(--color-text);
-  line-height: 1.1;
-  letter-spacing: -0.02em;
-  margin-bottom: var(--space-3);
-}
-.section-lede {
-  font-size: var(--text-sm);
-  color: var(--color-text-muted);
-  max-width: 72ch;
-  line-height: 1.7;
-}
-.microcopy-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2) var(--space-6);
-  margin-top: var(--space-3);
-  list-style: none;
-}
-.microcopy-list li {
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  color: var(--color-text-faint);
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-}
-.microcopy-list li::before {
-  content: '·';
-  color: var(--color-primary);
-  font-size: 1.2em;
-}
-
-/* ─── PRESET BUTTONS ─── */
-.preset-row {
-  display: flex;
-  gap: var(--space-3);
-  margin-bottom: var(--space-8);
-  flex-wrap: wrap;
-}
-.preset-btn {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  padding: var(--space-3) var(--space-5);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--color-border);
-  background: var(--color-surface);
-  transition: all var(--transition-interactive);
-  text-align: left;
-  gap: var(--space-1);
-}
-.preset-btn:hover {
-  border-color: var(--color-primary);
-  background: var(--color-primary-dim);
-}
-.preset-btn.is-active {
-  border-color: var(--color-primary);
-  background: var(--color-primary-dim);
-  box-shadow: 0 0 0 1px var(--color-primary);
-}
-.preset-name {
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--color-text);
-}
-.preset-btn.is-active .preset-name { color: var(--color-primary); }
-.preset-desc {
-  font-size: var(--text-xs);
-  color: var(--color-text-muted);
-  font-style: italic;
-}
-
-/* ─── MAIN GRID ─── */
-.sim-grid {
-  display: grid;
-  grid-template-columns: 380px 1fr;
-  gap: var(--space-8);
-  align-items: start;
-}
-@media (max-width: 1024px) {
-  .sim-grid { grid-template-columns: 1fr; }
-}
-
-
-/* ─── INPUTS PANEL ─── */
-.inputs-panel {
-  background:
-    radial-gradient(circle at top left, color-mix(in oklch, var(--color-primary) 14%, transparent), transparent 34%),
-    linear-gradient(180deg, color-mix(in oklch, var(--color-surface-2) 85%, var(--color-bg)), var(--color-surface));
-  border: 1px solid color-mix(in oklch, var(--color-primary) 18%, var(--color-border));
-  border-radius: calc(var(--radius-xl) + 6px);
-  padding: var(--space-6);
-  position: sticky;
-  top: var(--space-4);
-  box-shadow: var(--shadow-lg), inset 0 1px 0 rgba(255,255,255,0.03);
-  overflow: hidden;
-}
-.inputs-panel::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: linear-gradient(135deg, rgba(255,255,255,0.04), transparent 30%, transparent 70%, rgba(255,255,255,0.02));
-}
-.inputs-panel > * { position: relative; z-index: 1; }
-.inputs-panel-title {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  font-weight: 700;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--color-text);
-  margin-bottom: var(--space-5);
-  padding: var(--space-2) var(--space-3);
-  border-radius: var(--radius-full);
-  background: color-mix(in oklch, var(--color-primary) 11%, var(--color-surface-offset));
-  border: 1px solid color-mix(in oklch, var(--color-primary) 26%, var(--color-border));
-}
-.slider-group {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-}
-.slider-item {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-  padding: var(--space-4);
-  background: linear-gradient(180deg, color-mix(in oklch, var(--color-surface-2) 90%, var(--color-surface-offset)), color-mix(in oklch, var(--color-surface) 88%, var(--color-bg)));
-  border: 1px solid color-mix(in oklch, var(--color-border) 82%, var(--color-primary) 18%);
-  border-radius: calc(var(--radius-lg) + 4px);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.025), 0 8px 22px rgba(0,0,0,0.14);
-  transition: transform var(--transition-interactive), border-color var(--transition-interactive), box-shadow var(--transition-interactive), background var(--transition-interactive);
-}
-.slider-item:hover {
-  transform: translateY(-1px);
-  border-color: color-mix(in oklch, var(--color-primary) 42%, var(--color-border));
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.035), 0 14px 28px rgba(0,0,0,0.22), 0 0 0 1px color-mix(in oklch, var(--color-primary) 16%, transparent);
-}
-.slider-item.slider-item-featured {
-  background: linear-gradient(180deg, color-mix(in oklch, var(--color-primary) 8%, var(--color-surface-2)), color-mix(in oklch, var(--color-surface) 92%, var(--color-bg)));
-}
-.slider-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: var(--space-3);
-}
-.slider-copy {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-  min-width: 0;
-}
-.slider-label {
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--color-text);
-  line-height: 1.35;
-}
-.slider-note {
-  font-size: 0.76rem;
-  color: var(--color-text-faint);
-  line-height: 1.45;
-}
-.slider-value {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 86px;
-  padding: 0.65rem 0.85rem;
-  border-radius: var(--radius-full);
-  background: linear-gradient(180deg, color-mix(in oklch, var(--color-primary) 16%, var(--color-surface-offset)), color-mix(in oklch, var(--color-primary) 8%, var(--color-surface)));
-  border: 1px solid color-mix(in oklch, var(--color-primary) 38%, var(--color-border));
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 8px 16px rgba(0,0,0,0.18);
-  font-family: var(--font-mono);
-  font-size: var(--text-sm);
-  font-weight: 700;
-  color: var(--color-primary);
-  white-space: nowrap;
-  font-variant-numeric: tabular-nums;
-}
-.slider-shell {
-  position: relative;
-  padding: var(--space-3);
-  border-radius: var(--radius-xl);
-  background: color-mix(in oklch, var(--color-surface-offset) 88%, var(--color-bg));
-  border: 1px solid color-mix(in oklch, var(--color-border) 88%, transparent);
-}
-.slider-track {
-  position: relative;
-  height: 12px;
-  background: linear-gradient(180deg, color-mix(in oklch, var(--color-bg) 80%, var(--color-surface-offset)), color-mix(in oklch, var(--color-surface-dynamic) 86%, var(--color-bg)));
-  border-radius: var(--radius-full);
-  overflow: hidden;
-  box-shadow: inset 0 1px 2px rgba(0,0,0,0.35), inset 0 -1px 0 rgba(255,255,255,0.03);
-}
-.slider-track::after {
-  content: '';
-  position: absolute;
-  inset: 1px;
-  border-radius: inherit;
-  border: 1px solid rgba(255,255,255,0.03);
-  pointer-events: none;
-}
-.slider-fill {
-  position: absolute;
-  left: 0;
-  top: 0;
-  height: 100%;
-  background: linear-gradient(90deg, color-mix(in oklch, var(--color-primary) 78%, white), var(--color-primary), color-mix(in oklch, var(--color-primary) 65%, var(--color-accent)));
-  border-radius: var(--radius-full);
-  pointer-events: none;
-  box-shadow: 0 0 18px color-mix(in oklch, var(--color-primary) 28%, transparent);
-  transition: width var(--transition-interactive);
-}
-input[type="range"] {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  cursor: pointer;
-  z-index: 3;
-}
-.slider-range-labels {
-  display: flex;
-  justify-content: space-between;
-  gap: var(--space-2);
-  margin-top: var(--space-2);
-}
-.slider-range-labels span {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 60px;
-  padding: 0.3rem 0.55rem;
-  border-radius: var(--radius-full);
-  background: color-mix(in oklch, var(--color-surface) 88%, var(--color-bg));
-  border: 1px solid color-mix(in oklch, var(--color-border) 78%, transparent);
-  font-family: var(--font-mono);
-  font-size: 0.65rem;
-  color: var(--color-text-faint);
-  letter-spacing: 0.04em;
-}
-.divider-line {
-  height: 1px;
-  background: linear-gradient(90deg, transparent, color-mix(in oklch, var(--color-primary) 24%, var(--color-divider)), transparent);
-  margin: var(--space-1) 0;
-}
-
-/* ─── FOOTER STRIP ─── */
-.footer-strip {
-
-.footer-strip {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--space-6) 0 0;
-  border-top: 1px solid var(--color-divider);
-  margin-top: var(--space-10);
-  gap: var(--space-4);
-  flex-wrap: wrap;
-}
-.footer-brand {
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  color: var(--color-text-faint);
-  letter-spacing: 0.08em;
-}
-.footer-brand strong { color: var(--color-text-muted); }
-
-
-/* ─── CUSTOM SLIDER THUMB ─── */
-.slider-thumb-container {
-  position: relative;
-  height: 22px;
-  display: flex;
-  align-items: center;
-}
-.thumb-visual {
-  position: absolute;
-  top: 50%;
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-  z-index: 4;
-  background:
-    radial-gradient(circle at 35% 35%, rgba(255,255,255,0.95), rgba(255,255,255,0.45) 22%, transparent 24%),
-    radial-gradient(circle at center, color-mix(in oklch, var(--color-primary) 40%, white), var(--color-primary) 60%, color-mix(in oklch, var(--color-primary) 75%, black));
-  border: 2px solid color-mix(in oklch, white 72%, var(--color-primary));
-  box-shadow:
-    0 8px 20px rgba(0,0,0,0.32),
-    0 0 0 4px color-mix(in oklch, var(--color-primary) 16%, transparent),
-    inset 0 -3px 6px rgba(0,0,0,0.22);
-  transition: transform var(--transition-interactive), box-shadow var(--transition-interactive), left var(--transition-interactive);
-}
-.thumb-visual::after {
-  content: '';
-  position: absolute;
-  inset: 5px;
-  border-radius: 50%;
-  border: 1px solid rgba(255,255,255,0.18);
-}
-.slider-item:hover .thumb-visual {
-  transform: translate(-50%, -50%) scale(1.06);
-  box-shadow:
-    0 10px 26px rgba(0,0,0,0.38),
-    0 0 0 6px color-mix(in oklch, var(--color-primary) 18%, transparent),
-    0 0 26px color-mix(in oklch, var(--color-primary) 22%, transparent),
-    inset 0 -3px 6px rgba(0,0,0,0.22);
-}
-
-/* ─── VALUE ANIMATION ─── */
-
-@keyframes valueFlash {
-  0%   { color: var(--color-primary); transform: scale(1.04); }
-  100% { color: inherit; transform: scale(1); }
-}
-.metric-value.changed {
-  animation: valueFlash 0.3s ease-out forwards;
-}
-.delta-big.changed {
-  animation: valueFlash 0.3s ease-out forwards;
-}
-
-/* ─── SECTION SEPARATOR ─── */
-.section-sep {
-  height: 1px;
-  background: var(--color-divider);
-  margin: var(--space-8) 0;
-}
+*{box-sizing:border-box} html{-webkit-font-smoothing:antialiased} body{margin:0;background:radial-gradient(circle at top left, rgba(37,215,255,.07), transparent 28%),var(--bg);color:var(--text);font:var(--text-base)/1.6 var(--font-body)}
+button,input{font:inherit;color:inherit} button{cursor:pointer} strong{font-weight:800}
+.app{max-width:1320px;margin:0 auto;padding:32px 24px 48px}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid var(--divider)}
+.brand{display:flex;gap:12px;align-items:center}.brand svg{width:34px;height:34px}.mono{font-family:var(--font-mono);letter-spacing:.12em;text-transform:uppercase;font-size:var(--text-xs);color:var(--muted)}
+.theme{width:38px;height:38px;border-radius:12px;border:1px solid var(--border);background:var(--surface);display:grid;place-items:center}
+.head{margin-bottom:24px}.eyebrow{font-family:var(--font-mono);font-size:var(--text-xs);letter-spacing:.16em;text-transform:uppercase;color:var(--primary);margin:0 0 8px}.head h1{font-size:var(--text-xl);line-height:1.05;letter-spacing:-.03em;margin:0 0 10px}.lede{max-width:72ch;color:var(--muted);margin:0 0 12px}.micro{display:flex;flex-wrap:wrap;gap:10px 24px;margin:0;padding:0;list-style:none}.micro li{font-size:var(--text-xs);color:var(--faint);position:relative;padding-left:14px}.micro li::before{content:'•';position:absolute;left:0;color:var(--primary)}
+.presets{display:flex;gap:12px;flex-wrap:wrap;margin:22px 0 24px}.preset{padding:14px 16px;border-radius:14px;background:linear-gradient(180deg,var(--surface),#0d1118);border:1px solid var(--border);min-width:260px;text-align:left;box-shadow:var(--shadow-sm);transition:all var(--transition)}.preset:hover,.preset.active{border-color:rgba(37,215,255,.5);box-shadow:var(--glow)}.preset .name{display:block;font:700 var(--text-xs) var(--font-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--text);margin-bottom:4px}.preset.active .name{color:var(--primary)}.preset .desc{font-size:var(--text-xs);color:var(--muted);font-style:italic}
+.grid{display:grid;grid-template-columns:360px minmax(0,1fr);gap:24px;align-items:start}
+.panel{position:sticky;top:18px;background:linear-gradient(180deg,rgba(37,215,255,.08),transparent 24%),linear-gradient(180deg,var(--surface-2),var(--surface));border:1px solid rgba(37,215,255,.18);border-radius:24px;padding:18px;box-shadow:var(--shadow-md);overflow:hidden}.panel::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.035),transparent 35%,transparent 70%,rgba(255,255,255,.02));pointer-events:none}.panel>*{position:relative}.panel-title{display:inline-flex;padding:10px 14px;border-radius:var(--radius-pill);background:rgba(37,215,255,.08);border:1px solid rgba(37,215,255,.18);font:700 var(--text-xs) var(--font-mono);letter-spacing:.16em;text-transform:uppercase;margin-bottom:14px}
+.controls{display:flex;flex-direction:column;gap:14px}.control{padding:14px;border-radius:20px;background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.01));border:1px solid rgba(84,101,125,.35);box-shadow:inset 0 1px 0 rgba(255,255,255,.03), var(--shadow-sm)}.control.topline{background:linear-gradient(180deg,rgba(37,215,255,.08),rgba(255,255,255,.02))}
+.control-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin-bottom:10px}.control-copy{min-width:0}.label{font:700 .72rem/1.35 var(--font-mono);letter-spacing:.12em;text-transform:uppercase}.note{font-size:.76rem;color:var(--faint);margin-top:2px}.pill{display:inline-flex;align-items:center;justify-content:center;min-width:82px;padding:10px 14px;border-radius:var(--radius-pill);background:linear-gradient(180deg,rgba(37,215,255,.18),rgba(37,215,255,.08));border:1px solid rgba(37,215,255,.28);box-shadow:inset 0 1px 0 rgba(255,255,255,.08);font:700 var(--text-sm) var(--font-mono);color:var(--primary)}
+.slider-shell{padding:12px;border-radius:18px;background:#0f1319;border:1px solid rgba(84,101,125,.25)}.slider-wrap{position:relative;height:24px;display:flex;align-items:center}.track{position:relative;width:100%;height:12px;border-radius:999px;background:linear-gradient(180deg,#0a0d11,#1a212b);box-shadow:inset 0 2px 6px rgba(0,0,0,.4)}.fill{position:absolute;left:0;top:0;height:100%;border-radius:999px;background:linear-gradient(90deg,#61e8ff,var(--primary),#22b6ff);box-shadow:0 0 18px rgba(37,215,255,.28)}.thumb{position:absolute;top:50%;width:26px;height:26px;border-radius:50%;transform:translate(-50%,-50%);background:radial-gradient(circle at 35% 35%, rgba(255,255,255,.96), rgba(255,255,255,.42) 22%, transparent 24%), radial-gradient(circle at center, #8aefff, var(--primary-2));border:2px solid rgba(255,255,255,.75);box-shadow:0 10px 22px rgba(0,0,0,.32),0 0 0 5px rgba(37,215,255,.12)}
+input[type=range]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}.range-row{display:flex;justify-content:space-between;gap:8px;margin-top:8px}.range-row span{padding:4px 9px;border-radius:999px;background:#0b0f14;border:1px solid rgba(84,101,125,.22);color:var(--faint);font:500 .64rem var(--font-mono)}
+.sep{height:1px;background:linear-gradient(90deg,transparent,rgba(37,215,255,.28),transparent);margin:2px 0}
+.right{min-width:0;display:flex;flex-direction:column;gap:16px}
+.hero-card,.card,.strip,.note-box,.accordion{background:linear-gradient(180deg,var(--surface-2),var(--surface));border:1px solid var(--border);border-radius:22px;box-shadow:var(--shadow-sm)}
+.hero-card{padding:22px 22px 20px;border-color:rgba(37,215,255,.24);background:radial-gradient(circle at top right, rgba(37,215,255,.09), transparent 30%),linear-gradient(180deg,#121c24,#0f151d);box-shadow:var(--shadow-md),var(--glow)}
+.hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:18px;align-items:end}.hero-kpi .kicker,.card .kicker,.delta .kicker{font:700 var(--text-xs) var(--font-mono);letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}.hero-value{font:800 clamp(2.2rem,4.8vw,4rem)/.95 var(--font-mono);letter-spacing:-.04em;color:var(--primary);margin:0 0 8px}.hero-copy{margin:0;color:#d8e4ef;max-width:42ch}.hero-side{display:grid;gap:10px}.stat-chip{padding:12px 14px;border-radius:16px;background:rgba(255,255,255,.03);border:1px solid rgba(84,101,125,.32)}.stat-chip .mini{font:700 .65rem var(--font-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--faint);display:block;margin-bottom:4px}.stat-chip strong{font:700 1.1rem var(--font-mono);color:var(--text)}
+.card-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.card{padding:18px}.metric{font:800 clamp(1.35rem,2.2vw,2.25rem)/1 var(--font-mono);letter-spacing:-.03em;margin:0 0 10px}.sub{margin:0;color:var(--muted)}
+.delta-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.delta{padding:18px;border-radius:22px;background:linear-gradient(180deg,rgba(34,211,164,.08),rgba(255,255,255,.02));border:1px solid rgba(34,211,164,.26);box-shadow:var(--shadow-sm)}.delta .value{font:800 clamp(1.8rem,3vw,3rem)/1 var(--font-mono);color:var(--success);margin:0 0 8px}.badge{display:inline-flex;padding:6px 10px;border-radius:999px;background:var(--success-dim);color:var(--success);font:700 .72rem var(--font-mono);letter-spacing:.06em;text-transform:uppercase;margin-top:10px}
+.strip{padding:14px 16px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.strip .item{min-width:0}.strip .mini{display:block;font:700 .63rem var(--font-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin-bottom:4px}.strip strong{font:700 .95rem var(--font-mono);color:var(--text)}
+.note-box{padding:16px 18px;border-left:2px solid rgba(255,255,255,.15)}.note-box strong{display:block;font:700 var(--text-xs) var(--font-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}.note-box p{margin:0;color:var(--faint)}
+.accordion button{all:unset;display:flex;justify-content:space-between;align-items:center;width:100%;padding:16px 18px;cursor:pointer;font:700 var(--text-xs) var(--font-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}.accordion-body{display:none;padding:0 18px 18px;border-top:1px solid var(--divider)}.accordion.open .accordion-body{display:block}.accordion ul{margin:14px 0 0;padding:0;list-style:none;display:grid;gap:10px}.accordion li{color:var(--muted);padding-left:16px;position:relative}.accordion li::before{content:'→';position:absolute;left:0;color:var(--primary)}
+.footer{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:28px;padding-top:20px;border-top:1px solid var(--divider);font:500 var(--text-xs) var(--font-mono);color:var(--faint)}
+.changed{animation:flash .28s ease-out}.negative{color:var(--warning)!important;background:rgba(245,158,11,.12)!important}
+@keyframes flash{0%{transform:translateY(1px);opacity:.6}100%{transform:none;opacity:1}}
+@media (max-width:1080px){.grid{grid-template-columns:1fr}.panel{position:static}.hero-grid,.card-grid,.delta-row,.strip{grid-template-columns:1fr 1fr}}
+@media (max-width:720px){.app{padding:24px 16px 40px}.preset{min-width:100%}.hero-grid,.card-grid,.delta-row,.strip{grid-template-columns:1fr}.control-head{align-items:flex-start}.pill{min-width:72px}}
 </style>
 </head>
 <body>
-
-<div class="app-shell">
-
-  <!-- TOP BAR -->
-  <header class="topbar">
-    <div class="topbar-brand">
-      <svg class="topbar-logo" aria-label="Token Watt Calculator" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="36" height="36" rx="8" fill="currentColor" opacity="0.06"/>
-        <path d="M18 4L22 13H30L24 19L26 28L18 23L10 28L12 19L6 13H14L18 4Z" fill="none" stroke="var(--color-primary)" stroke-width="1.5" stroke-linejoin="round"/>
-        <circle cx="18" cy="18" r="3" fill="var(--color-primary)" opacity="0.7"/>
-      </svg>
-      <span class="topbar-title">Nirmata / Token Economics</span>
+<div class="app">
+  <div class="top">
+    <div class="brand">
+      <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="36" height="36" rx="10" fill="rgba(37,215,255,.08)"/><path d="M18 5l3.6 8.2H31l-7 5.6 2.3 9.2L18 23.4 9.7 28l2.3-9.2-7-5.6h9.4L18 5Z" stroke="var(--primary)" stroke-width="1.5" stroke-linejoin="round"/><circle cx="18" cy="18" r="2.7" fill="var(--primary)"/></svg>
+      <div class="mono">Nirmata / Token Economics</div>
     </div>
-    <div class="topbar-actions">
-      <button class="btn-icon" data-theme-toggle aria-label="Switch to light mode">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
-      </button>
-    </div>
-  </header>
+    <button class="theme" id="themeBtn" aria-label="Toggle theme">◐</button>
+  </div>
 
-  <!-- SECTION HEAD -->
-  <div class="section-head">
-    <p class="eyebrow">TOKEN ECONOMICS</p>
-    <h1 class="section-title">Tokens&thinsp;/&thinsp;Watt&thinsp;/&thinsp;User Simulator</h1>
-    <p class="section-lede">A directional efficiency model for a constrained Perplexity workload — not a pricing guarantee. Adjust user activity, token mix, inference power, offload, and semantic cache effectiveness to see how the convergence layer changes user-path token economics.</p>
-    <ul class="microcopy-list">
-      <li>Built for <strong>scenario modeling</strong>, not audited billing</li>
+  <section class="head">
+    <p class="eyebrow">Token Economics</p>
+    <h1>Tokens / Watt / User Simulator</h1>
+    <p class="lede">A directional efficiency model for a constrained Perplexity workload — not a pricing guarantee. Adjust user activity, token mix, inference power, offload, and semantic cache effectiveness to see how the convergence layer changes user-path token economics.</p>
+    <ul class="micro">
+      <li>Built for scenario modeling, not audited billing</li>
       <li>Best used for pilot framing, not procurement commitments</li>
       <li>Every output is only as good as the assumptions shown on-screen</li>
     </ul>
+  </section>
+
+  <div class="presets" id="presetRow">
+    <button class="preset" data-preset="conservative"><span class="name">Conservative</span><span class="desc">Low cache confidence · modest edge offload · higher watt pressure</span></button>
+    <button class="preset active" data-preset="base"><span class="name">Base Case</span><span class="desc">Most credible pilot envelope for leadership review</span></button>
+    <button class="preset" data-preset="aggressive"><span class="name">Aggressive</span><span class="desc">Higher semantic reuse · stronger offload · tuned convergence layer</span></button>
   </div>
 
-  <!-- PRESET BUTTONS -->
-  <div class="preset-row" id="presetRow">
-    <button class="preset-btn" data-preset="conservative">
-      <span class="preset-name">Conservative</span>
-      <span class="preset-desc">Low cache confidence · modest edge offload · higher watt pressure</span>
-    </button>
-    <button class="preset-btn is-active" data-preset="base">
-      <span class="preset-name">Base Case</span>
-      <span class="preset-desc">Most credible pilot envelope for leadership review</span>
-    </button>
-    <button class="preset-btn" data-preset="aggressive">
-      <span class="preset-name">Aggressive</span>
-      <span class="preset-desc">Higher semantic reuse · stronger offload · tuned convergence layer</span>
-    </button>
-  </div>
-
-  <!-- MAIN SIM GRID -->
-  <div class="sim-grid">
-
-    <!-- LEFT: INPUTS PANEL -->
-    <aside class="inputs-panel">
-      <p class="inputs-panel-title">Scenario Controls</p>
-      <div class="slider-group" id="sliderGroup">
-        <!-- Rendered by JS -->
-      </div>
+  <div class="grid">
+    <aside class="panel">
+      <div class="panel-title">Scenario Controls</div>
+      <div class="controls" id="controls"></div>
     </aside>
 
-    <!-- RIGHT: OUTPUTS PANEL -->
-    <div class="outputs-panel">
-
-      <!-- HERO KPI -->
-      <div class="metric-grid">
-        <article class="metric-card accent-hero">
-          <span class="metric-label">Tokens / Watt / User</span>
-          <strong class="metric-value" id="tokensPerWattPerUser">—</strong>
-          <p class="metric-sub">User-path efficiency metric — the cleanest storytelling KPI for this pilot.</p>
-        </article>
-      </div>
-
-      <!-- PRIMARY 4-CARD GRID -->
-      <div class="metric-grid">
-        <article class="metric-card">
-          <span class="metric-label">Tokens / User / Day</span>
-          <strong class="metric-value" id="tokensPerUserDay">—</strong>
-          <p class="metric-sub">Blended prompt + response volume for an active user path.</p>
-        </article>
-        <article class="metric-card">
-          <span class="metric-label">Watts / User</span>
-          <strong class="metric-value" id="wattsPerUser">—</strong>
-          <p class="metric-sub">Directional inference watt envelope after stress, offload, and semantic reuse.</p>
-        </article>
-        <article class="metric-card">
-          <span class="metric-label">Tokens / Watt</span>
-          <strong class="metric-value" id="tokensPerWatt">—</strong>
-          <p class="metric-sub">Overall token throughput efficiency across the modeled workload.</p>
-        </article>
-        <article class="metric-card">
-          <span class="metric-label">Effective Watts</span>
-          <strong class="metric-value" id="effectiveWatts">—</strong>
-          <p class="metric-sub">Post-optimization inference envelope under peak-hour stress load.</p>
-        </article>
-      </div>
-
-      <!-- DELTA CARDS -->
-      <div class="delta-row">
-        <div class="delta-card success">
-          <span class="metric-label">Efficiency Lift</span>
-          <div class="delta-big" id="efficiencyLift">—</div>
-          <p class="metric-sub">Improvement versus the centralized baseline under the same workload.</p>
-          <div class="delta-badge positive" id="efficiencyBadge">vs. baseline</div>
-        </div>
-        <div class="delta-card success">
-          <span class="metric-label">Watt Savings</span>
-          <div class="delta-big" id="wattSavings">—</div>
-          <p class="metric-sub">Directional reduction in user-facing inference watt pressure.</p>
-          <div class="delta-badge positive" id="wattBadge">vs. baseline</div>
-        </div>
-      </div>
-
-      <!-- BASELINE COMPARISON STRIP -->
-      <div class="baseline-strip">
-        <div class="baseline-item">
-          <span class="baseline-lbl">Baseline Tok/W/User</span>
-          <span class="baseline-val" id="baselineTWU">—</span>
-        </div>
-        <div class="baseline-item">
-          <span class="baseline-lbl">Baseline W/User</span>
-          <span class="baseline-val" id="baselineWU">—</span>
-        </div>
-        <div class="baseline-item">
-          <span class="baseline-lbl">Optimized Share</span>
-          <span class="baseline-val" id="optimizedShare">—</span>
-        </div>
-        <div class="baseline-item">
-          <span class="baseline-lbl">Total Req / Day</span>
-          <span class="baseline-val" id="totalReqs">—</span>
-        </div>
-      </div>
-
-      <!-- MODEL NOTE -->
-      <div class="model-note">
-        <strong>Model Note</strong>
-        <p>This simulator is directional. It does not claim audited facility power draw, rack-level telemetry, or vendor-certified cost accounting. It is intended to compare baseline centralized delivery against a convergence-layer scenario under the same workload assumptions.</p>
-      </div>
-
-      <!-- ACCORDION -->
-      <div class="accordion">
-        <button class="accordion-trigger" id="accordionTrigger" aria-expanded="false">
-          What moves this number?
-          <svg class="accordion-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M4 6l4 4 4-4"/>
-          </svg>
-        </button>
-        <div class="accordion-body" id="accordionBody">
-          <div class="accordion-inner">
-            <ul class="accordion-list">
-              <li>Higher requests per user increases token volume fast — this is the highest-leverage input for total daily load.</li>
-              <li>Larger prompts raise token throughput but can also raise watt pressure on un-cached paths.</li>
-              <li>Edge offload reduces centralized user-path power demand; gains compound with semantic cache.</li>
-              <li>Semantic cache hit rate compresses repeat-token compute — the most efficient watts are the ones never spent.</li>
-              <li>Peak-hour stress penalizes centralized delivery first; the convergence layer absorbs disproportionate benefit.</li>
-            </ul>
+    <section class="right">
+      <article class="hero-card">
+        <div class="hero-grid">
+          <div class="hero-kpi">
+            <div class="kicker">Primary Pilot KPI</div>
+            <div class="hero-value" id="tokensPerWattPerUser">—</div>
+            <p class="hero-copy"><strong>Tokens / Watt / User</strong> is the cleanest user-path efficiency story for leadership review. It translates edge offload and semantic reuse into a KPI that feels operational, not abstract.</p>
+          </div>
+          <div class="hero-side">
+            <div class="stat-chip"><span class="mini">Optimized Share</span><strong id="optimizedShare">—</strong></div>
+            <div class="stat-chip"><span class="mini">Total Requests / Day</span><strong id="totalReqs">—</strong></div>
+            <div class="stat-chip"><span class="mini">Baseline Tok/W/User</span><strong id="baselineTWU">—</strong></div>
           </div>
         </div>
+      </article>
+
+      <div class="card-grid">
+        <article class="card"><div class="kicker">Tokens / User / Day</div><div class="metric" id="tokensPerUserDay">—</div><p class="sub">Blended prompt + response volume for an active user path.</p></article>
+        <article class="card"><div class="kicker">Watts / User</div><div class="metric" id="wattsPerUser">—</div><p class="sub">Directional inference watt envelope after stress, offload, and semantic reuse.</p></article>
+        <article class="card"><div class="kicker">Tokens / Watt</div><div class="metric" id="tokensPerWatt">—</div><p class="sub">Overall token throughput efficiency across the modeled workload.</p></article>
+        <article class="card"><div class="kicker">Effective Watts</div><div class="metric" id="effectiveWatts">—</div><p class="sub">Post-optimization inference envelope under peak-hour stress load.</p></article>
       </div>
 
-    </div><!-- end outputs-panel -->
-  </div><!-- end sim-grid -->
+      <div class="delta-row">
+        <article class="delta"><div class="kicker">Efficiency Lift</div><div class="value" id="efficiencyLift">—</div><p class="sub">Improvement versus the centralized baseline under the same workload.</p><div class="badge" id="efficiencyBadge">vs baseline</div></article>
+        <article class="delta"><div class="kicker">Watt Savings</div><div class="value" id="wattSavings">—</div><p class="sub">Directional reduction in user-facing inference watt pressure.</p><div class="badge" id="wattBadge">power saved</div></article>
+      </div>
 
-  <!-- FOOTER -->
-  <div class="footer-strip">
-    <span class="footer-brand"><strong>Nirmata Holdings</strong> · Token Economics Simulator v1.0</span>
-    <span class="footer-brand">Directional model · Not audited billing · Pilot framing only</span>
+      <div class="strip">
+        <div class="item"><span class="mini">Baseline W / User</span><strong id="baselineWU">—</strong></div>
+        <div class="item"><span class="mini">Total Tokens / Request</span><strong id="tokensPerReq">—</strong></div>
+        <div class="item"><span class="mini">Total Tokens / Day</span><strong id="tokensPerDay">—</strong></div>
+        <div class="item"><span class="mini">Stress Factor</span><strong id="stressFactor">—</strong></div>
+      </div>
+
+      <div class="note-box"><strong>Model Note</strong><p>This simulator is directional. It does not claim audited facility power draw, rack-level telemetry, or vendor-certified cost accounting. It is intended to compare baseline centralized delivery against a convergence-layer scenario under the same workload assumptions.</p></div>
+
+      <div class="accordion" id="accordion"><button id="accordionBtn">What moves this number? <span>⌄</span></button><div class="accordion-body"><ul><li>Higher requests per user increases token volume fast.</li><li>Larger prompts raise token throughput but can also raise watt pressure.</li><li>Edge offload reduces centralized user-path power demand.</li><li>Semantic cache hit rate compresses repeat-token compute.</li><li>Peak-hour stress penalizes centralized delivery first.</li></ul></div></div>
+    </section>
   </div>
 
-</div><!-- end app-shell -->
+  <div class="footer"><span><strong>Nirmata Holdings</strong> · Token Economics Simulator</span><span>Directional model · Not audited billing · Pilot framing only</span></div>
+</div>
 
 <script>
-/* ─── PRESETS ─── */
-const presets = {
-  conservative: {
-    activeUsers: 8000,
-    requestsPerUserPerDay: 10,
-    inputTokensPerRequest: 1800,
-    outputTokensPerRequest: 700,
-    baselineInferenceWatts: 22000,
-    akamaiEdgeOffloadPct: 20,
-    semanticCacheHitRatePct: 8,
-    powerReductionPct: 25,
-    peakStressFactor: 1.3
-  },
-  base: {
-    activeUsers: 12000,
-    requestsPerUserPerDay: 14,
-    inputTokensPerRequest: 2200,
-    outputTokensPerRequest: 900,
-    baselineInferenceWatts: 18500,
-    akamaiEdgeOffloadPct: 35,
-    semanticCacheHitRatePct: 18,
-    powerReductionPct: 42,
-    peakStressFactor: 1.2
-  },
-  aggressive: {
-    activeUsers: 18000,
-    requestsPerUserPerDay: 18,
-    inputTokensPerRequest: 2600,
-    outputTokensPerRequest: 1100,
-    baselineInferenceWatts: 20000,
-    akamaiEdgeOffloadPct: 55,
-    semanticCacheHitRatePct: 32,
-    powerReductionPct: 58,
-    peakStressFactor: 1.15
-  }
+const presets={
+  conservative:{activeUsers:8000,requestsPerUserPerDay:10,inputTokensPerRequest:1800,outputTokensPerRequest:700,baselineInferenceWatts:22000,akamaiEdgeOffloadPct:20,semanticCacheHitRatePct:8,powerReductionPct:25,peakStressFactor:1.3},
+  base:{activeUsers:12000,requestsPerUserPerDay:14,inputTokensPerRequest:2200,outputTokensPerRequest:900,baselineInferenceWatts:18500,akamaiEdgeOffloadPct:35,semanticCacheHitRatePct:18,powerReductionPct:42,peakStressFactor:1.2},
+  aggressive:{activeUsers:18000,requestsPerUserPerDay:18,inputTokensPerRequest:2600,outputTokensPerRequest:1100,baselineInferenceWatts:20000,akamaiEdgeOffloadPct:55,semanticCacheHitRatePct:32,powerReductionPct:58,peakStressFactor:1.15}
 };
-
-/* ─── SLIDER DEFINITIONS ─── */
-const sliderDefs = [
-  { key: 'activeUsers',              label: 'Active Users',                              min: 1000,    max: 250000, step: 500,  fmt: n => fmtInt(n) },
-  { key: 'requestsPerUserPerDay',    label: 'Requests / User / Day',                     min: 1,       max: 100,    step: 1,    fmt: n => n },
-  { key: 'inputTokensPerRequest',    label: 'Input Tokens / Request',                    min: 100,     max: 10000,  step: 50,   fmt: n => fmtInt(n) },
-  { key: 'outputTokensPerRequest',   label: 'Output Tokens / Request',                   min: 50,      max: 5000,   step: 50,   fmt: n => fmtInt(n) },
+const defs=[
+  {key:'activeUsers',label:'Active Users',min:1000,max:250000,step:500,fmt:n=>fmtInt(n),featured:true},
+  {key:'requestsPerUserPerDay',label:'Requests / User / Day',min:1,max:100,step:1,fmt:n=>fmtInt(n),featured:true},
+  {key:'inputTokensPerRequest',label:'Input Tokens / Request',min:100,max:10000,step:50,fmt:n=>fmtInt(n)},
+  {key:'outputTokensPerRequest',label:'Output Tokens / Request',min:50,max:5000,step:50,fmt:n=>fmtInt(n)},
   null,
-  { key: 'baselineInferenceWatts',   label: 'Baseline Inference Watts',                  min: 1000,    max: 100000, step: 500,  fmt: n => fmtInt(n) + ' W' },
-  { key: 'peakStressFactor',         label: 'Peak-Hour Stress Factor',                   min: 1.0,     max: 3.0,    step: 0.05, fmt: n => n.toFixed(2) + 'x' },
+  {key:'baselineInferenceWatts',label:'Baseline Inference Watts',min:1000,max:100000,step:500,fmt:n=>fmtInt(n)+' W'},
+  {key:'peakStressFactor',label:'Peak-Hour Stress Factor',min:1,max:3,step:.05,fmt:n=>fmt2(n)+'x'},
   null,
-  { key: 'akamaiEdgeOffloadPct',     label: 'Akamai Edge Offload',                       min: 0,       max: 80,     step: 1,    fmt: n => n + '%' },
-  { key: 'semanticCacheHitRatePct',  label: 'Semantic Cache Hit Rate',                   min: 0,       max: 70,     step: 1,    fmt: n => n + '%' },
-  { key: 'powerReductionPct',        label: 'Power Reduction on Offloaded / Cached Work', min: 0,       max: 90,     step: 1,    fmt: n => n + '%' },
+  {key:'akamaiEdgeOffloadPct',label:'Akamai Edge Offload',min:0,max:80,step:1,fmt:n=>fmtInt(n)+'%'},
+  {key:'semanticCacheHitRatePct',label:'Semantic Cache Hit Rate',min:0,max:70,step:1,fmt:n=>fmtInt(n)+'%'},
+  {key:'powerReductionPct',label:'Power Reduction on Offloaded / Cached Work',min:0,max:90,step:1,fmt:n=>fmtInt(n)+'%'}
 ];
-
-/* ─── FORMATTERS ─── */
-const fmtInt = n => new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(n);
-const fmt1   = n => new Intl.NumberFormat('en-US', { maximumFractionDigits: 1 }).format(n);
-const fmt2   = n => new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 }).format(n);
-const fmtPct = n => `${n >= 0 ? '+' : ''}${fmt1(n)}%`;
-const fmtK   = n => n >= 1000 ? fmt1(n/1000) + 'K' : fmtInt(n);
-const fmtM   = n => n >= 1e6 ? fmt1(n/1e6) + 'M' : fmtK(n);
-
-/* ─── STATE ─── */
-let state = { ...presets.base };
-
-/* ─── FORMULA ─── */
-function calcTokenWattUserModel(p) {
-  const offload      = p.akamaiEdgeOffloadPct / 100;
-  const cacheHit     = p.semanticCacheHitRatePct / 100;
-  const powerRed     = p.powerReductionPct / 100;
-
-  const totalTokensPerRequest   = p.inputTokensPerRequest + p.outputTokensPerRequest;
-  const tokensPerUserPerDay     = p.requestsPerUserPerDay * totalTokensPerRequest;
-  const totalRequestsPerDay     = p.activeUsers * p.requestsPerUserPerDay;
-  const totalTokensPerDay       = p.activeUsers * tokensPerUserPerDay;
-
-  const optimizedShare = Math.min(0.95, offload + cacheHit - (offload * cacheHit * 0.5));
-  const effectiveWatts =
-    p.baselineInferenceWatts *
-    p.peakStressFactor *
-    (1 - optimizedShare * powerRed);
-
-  const wattsPerUser             = effectiveWatts / p.activeUsers;
-  const tokensPerWatt            = totalTokensPerDay / effectiveWatts;
-  const tokensPerWattPerUser     = tokensPerUserPerDay / wattsPerUser;
-
-  const baselineWattsStressed    = p.baselineInferenceWatts * p.peakStressFactor;
-  const baselineWattsPerUser     = baselineWattsStressed / p.activeUsers;
-  const baselineTokensPerWatt    = totalTokensPerDay / baselineWattsStressed;
-  const baselineTokensPerWattPerUser = tokensPerUserPerDay / baselineWattsPerUser;
-
-  const efficiencyLiftPct =
-    ((tokensPerWattPerUser - baselineTokensPerWattPerUser) / baselineTokensPerWattPerUser) * 100;
-  const wattSavingsPct =
-    ((baselineWattsStressed - effectiveWatts) / baselineWattsStressed) * 100;
-
-  return {
-    totalTokensPerRequest, tokensPerUserPerDay, totalRequestsPerDay, totalTokensPerDay,
-    optimizedShare, effectiveWatts, wattsPerUser, tokensPerWatt, tokensPerWattPerUser,
-    baselineWattsStressed, baselineWattsPerUser, baselineTokensPerWatt,
-    baselineTokensPerWattPerUser, efficiencyLiftPct, wattSavingsPct
-  };
+const fmtInt=n=>new Intl.NumberFormat('en-US',{maximumFractionDigits:0}).format(n);
+const fmt1=n=>new Intl.NumberFormat('en-US',{maximumFractionDigits:1}).format(n);
+const fmt2=n=>new Intl.NumberFormat('en-US',{maximumFractionDigits:2}).format(n);
+const fmtPct=n=>`${n>=0?'+':''}${fmt1(n)}%`;
+const compact=n=>new Intl.NumberFormat('en-US',{notation:'compact',maximumFractionDigits:1}).format(n);
+let state={...presets.base};
+function calc(p){
+  const offload=p.akamaiEdgeOffloadPct/100,cacheHit=p.semanticCacheHitRatePct/100,powerReduction=p.powerReductionPct/100;
+  const totalTokensPerRequest=p.inputTokensPerRequest+p.outputTokensPerRequest;
+  const tokensPerUserPerDay=p.requestsPerUserPerDay*totalTokensPerRequest;
+  const totalRequestsPerDay=p.activeUsers*p.requestsPerUserPerDay;
+  const totalTokensPerDay=p.activeUsers*tokensPerUserPerDay;
+  const optimizedShare=Math.min(.95,offload+cacheHit-(offload*cacheHit*.5));
+  const effectiveWatts=p.baselineInferenceWatts*p.peakStressFactor*(1-optimizedShare*powerReduction);
+  const wattsPerUser=effectiveWatts/p.activeUsers;
+  const tokensPerWatt=totalTokensPerDay/effectiveWatts;
+  const tokensPerWattPerUser=tokensPerUserPerDay/wattsPerUser;
+  const baselineWattsStressed=p.baselineInferenceWatts*p.peakStressFactor;
+  const baselineWattsPerUser=baselineWattsStressed/p.activeUsers;
+  const baselineTokensPerWattPerUser=tokensPerUserPerDay/baselineWattsPerUser;
+  const efficiencyLiftPct=((tokensPerWattPerUser-baselineTokensPerWattPerUser)/baselineTokensPerWattPerUser)*100;
+  const wattSavingsPct=((baselineWattsStressed-effectiveWatts)/baselineWattsStressed)*100;
+  return {totalTokensPerRequest,tokensPerUserPerDay,totalRequestsPerDay,totalTokensPerDay,optimizedShare,effectiveWatts,wattsPerUser,tokensPerWatt,tokensPerWattPerUser,baselineWattsPerUser,baselineTokensPerWattPerUser,efficiencyLiftPct,wattSavingsPct};
 }
-
-/* ─── ANIMATE VALUE ─── */
-function animateEl(id) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  el.classList.remove('changed');
-  void el.offsetWidth;
-  el.classList.add('changed');
+function bump(id,val){const el=document.getElementById(id);if(!el)return;if(el.textContent!==val){el.textContent=val;el.classList.remove('changed');void el.offsetWidth;el.classList.add('changed');}}
+function render(){
+  const m=calc(state);
+  bump('tokensPerWattPerUser',fmtInt(m.tokensPerWattPerUser));
+  bump('optimizedShare',fmt1(m.optimizedShare*100)+'%');
+  bump('totalReqs',compact(m.totalRequestsPerDay)+'/day');
+  bump('baselineTWU',fmtInt(m.baselineTokensPerWattPerUser));
+  bump('tokensPerUserDay',compact(m.tokensPerUserPerDay));
+  bump('wattsPerUser',fmt1(m.wattsPerUser)+' W');
+  bump('tokensPerWatt',fmtInt(m.tokensPerWatt));
+  bump('effectiveWatts',compact(m.effectiveWatts)+' W');
+  bump('efficiencyLift',fmtPct(m.efficiencyLiftPct));
+  bump('wattSavings',fmtPct(m.wattSavingsPct));
+  bump('baselineWU',fmt1(m.baselineWattsPerUser)+' W');
+  bump('tokensPerReq',fmtInt(m.totalTokensPerRequest));
+  bump('tokensPerDay',compact(m.totalTokensPerDay));
+  bump('stressFactor',fmt2(state.peakStressFactor)+'x');
+  const eb=document.getElementById('efficiencyBadge');
+  const wb=document.getElementById('wattBadge');
+  eb.textContent=m.efficiencyLiftPct>=0?'above baseline':'below baseline';
+  wb.textContent=m.wattSavingsPct>=0?'power saved':'power added';
+  eb.classList.toggle('negative',m.efficiencyLiftPct<0); wb.classList.toggle('negative',m.wattSavingsPct<0);
 }
-
-/* ─── RENDER OUTPUTS ─── */
-function renderOutputs() {
-  const m = calcTokenWattUserModel(state);
-
-  const fields = [
-    ['tokensPerWattPerUser', fmtInt(m.tokensPerWattPerUser)],
-    ['tokensPerUserDay',     fmtM(m.tokensPerUserPerDay)],
-    ['wattsPerUser',         fmt1(m.wattsPerUser) + ' W'],
-    ['tokensPerWatt',        fmtInt(m.tokensPerWatt)],
-    ['effectiveWatts',       fmtInt(m.effectiveWatts) + ' W'],
-    ['efficiencyLift',       fmtPct(m.efficiencyLiftPct)],
-    ['wattSavings',          fmtPct(m.wattSavingsPct)],
-    ['baselineTWU',          fmtInt(m.baselineTokensPerWattPerUser)],
-    ['baselineWU',           fmt1(m.baselineWattsPerUser) + ' W'],
-    ['optimizedShare',       fmt1(m.optimizedShare * 100) + '%'],
-    ['totalReqs',            fmtM(m.totalRequestsPerDay) + '/day'],
-  ];
-
-  fields.forEach(([id, val]) => {
-    const el = document.getElementById(id);
-    if (el && el.textContent !== val) {
-      el.textContent = val;
-      animateEl(id);
-    }
-  });
-
-  // Update badges
-  const effBadge = document.getElementById('efficiencyBadge');
-  if (effBadge) effBadge.textContent = m.efficiencyLiftPct > 0 ? 'above baseline' : 'below baseline';
-  const wBadge = document.getElementById('wattBadge');
-  if (wBadge) wBadge.textContent = m.wattSavingsPct > 0 ? 'power saved' : 'power added';
-}
-
-/* ─── BUILD SLIDERS ─── */
-
-function buildSliders() {
-  const container = document.getElementById('sliderGroup');
-  container.innerHTML = '';
-
-  sliderDefs.forEach((def, index) => {
-    if (def === null) {
-      const sep = document.createElement('div');
-      sep.className = 'divider-line';
-      container.appendChild(sep);
-      return;
-    }
-
-    const val = state[def.key];
-    const pct = ((val - def.min) / (def.max - def.min)) * 100;
-    const featured = index < 2 ? ' slider-item-featured' : '';
-    const rangeHint = `${def.fmt(def.min)} → ${def.fmt(def.max)}`;
-
-    const item = document.createElement('div');
-    item.className = `slider-item${featured}`;
-    item.innerHTML = `
-      <div class="slider-header">
-        <div class="slider-copy">
-          <label class="slider-label" for="slider-${def.key}">${def.label}</label>
-          <span class="slider-note">Range: ${rangeHint}</span>
-        </div>
-        <span class="slider-value" id="val-${def.key}">${def.fmt(val)}</span>
-      </div>
-      <div class="slider-shell">
-        <div class="slider-thumb-container">
-          <div class="slider-track">
-            <div class="slider-fill" id="fill-${def.key}" style="width:${pct}%"></div>
-          </div>
-          <div class="thumb-visual" id="thumb-${def.key}" style="left:${pct}%"></div>
-          <input
-            type="range"
-            id="slider-${def.key}"
-            min="${def.min}" max="${def.max}" step="${def.step}"
-            value="${val}"
-            aria-label="${def.label}"
-          >
-        </div>
-        <div class="slider-range-labels">
-          <span>${def.fmt(def.min)}</span>
-          <span>${def.fmt(def.max)}</span>
-        </div>
-      </div>
-    `;
-    container.appendChild(item);
-
-    const input = item.querySelector('input');
-    input.addEventListener('input', () => {
-      const v = parseFloat(input.value);
-      state[def.key] = v;
-      const p = ((v - def.min) / (def.max - def.min)) * 100;
-      document.getElementById(`val-${def.key}`).textContent = def.fmt(v);
-      document.getElementById(`fill-${def.key}`).style.width = p + '%';
-      document.getElementById(`thumb-${def.key}`).style.left = p + '%';
-      clearActivePreset();
-      renderOutputs();
-    });
+function buildControls(){
+  const root=document.getElementById('controls'); root.innerHTML='';
+  defs.forEach(def=>{
+    if(def===null){const sep=document.createElement('div');sep.className='sep';root.appendChild(sep);return;}
+    const v=state[def.key], pct=((v-def.min)/(def.max-def.min))*100;
+    const wrap=document.createElement('div'); wrap.className='control'+(def.featured?' topline':'');
+    wrap.innerHTML=`<div class="control-head"><div class="control-copy"><div class="label">${def.label}</div><div class="note">Range: ${def.fmt(def.min)} → ${def.fmt(def.max)}</div></div><div class="pill" id="v-${def.key}">${def.fmt(v)}</div></div><div class="slider-shell"><div class="slider-wrap"><div class="track"><div class="fill" id="f-${def.key}" style="width:${pct}%"></div></div><div class="thumb" id="t-${def.key}" style="left:${pct}%"></div><input type="range" id="i-${def.key}" min="${def.min}" max="${def.max}" step="${def.step}" value="${v}" aria-label="${def.label}"></div><div class="range-row"><span>${def.fmt(def.min)}</span><span>${def.fmt(def.max)}</span></div></div>`;
+    root.appendChild(wrap);
+    wrap.querySelector('input').addEventListener('input',e=>{const val=parseFloat(e.target.value); state[def.key]=val; const p=((val-def.min)/(def.max-def.min))*100; document.getElementById(`v-${def.key}`).textContent=def.fmt(val); document.getElementById(`f-${def.key}`).style.width=p+'%'; document.getElementById(`t-${def.key}`).style.left=p+'%'; document.querySelectorAll('.preset').forEach(b=>b.classList.remove('active')); render();});
   });
 }
-
-
-/* ─── PRESETS ─── */
-function clearActivePreset() {
-  document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('is-active'));
-}
-function applyPreset(name) {
-  state = { ...presets[name] };
-  clearActivePreset();
-  document.querySelector(`[data-preset="${name}"]`).classList.add('is-active');
-  buildSliders();
-  renderOutputs();
-}
-
-document.getElementById('presetRow').addEventListener('click', e => {
-  const btn = e.target.closest('[data-preset]');
-  if (btn) applyPreset(btn.dataset.preset);
-});
-
-/* ─── ACCORDION ─── */
-const accTrigger = document.getElementById('accordionTrigger');
-const accBody    = document.getElementById('accordionBody');
-accTrigger.addEventListener('click', () => {
-  const open = accBody.classList.toggle('open');
-  accTrigger.classList.toggle('open', open);
-  accTrigger.setAttribute('aria-expanded', open);
-});
-
-/* ─── THEME TOGGLE ─── */
-(function(){
-  const toggle = document.querySelector('[data-theme-toggle]');
-  const root   = document.documentElement;
-  let dark = true;
-
-  function setTheme(isDark) {
-    dark = isDark;
-    root.setAttribute('data-theme', isDark ? 'dark' : 'light');
-    if (toggle) {
-      toggle.setAttribute('aria-label', 'Switch to ' + (isDark ? 'light' : 'dark') + ' mode');
-      toggle.innerHTML = isDark
-        ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>'
-        : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
-    }
-  }
-
-  toggle && toggle.addEventListener('click', () => setTheme(!dark));
-  setTheme(true);
-})();
-
-/* ─── INIT ─── */
-buildSliders();
-renderOutputs();
+function applyPreset(name){state={...presets[name]};document.querySelectorAll('.preset').forEach(b=>b.classList.toggle('active',b.dataset.preset===name));buildControls();render();}
+document.getElementById('presetRow').addEventListener('click',e=>{const b=e.target.closest('.preset'); if(b) applyPreset(b.dataset.preset);});
+document.getElementById('accordionBtn').addEventListener('click',()=>document.getElementById('accordion').classList.toggle('open'));
+document.getElementById('themeBtn').addEventListener('click',()=>document.documentElement.dataset.theme=document.documentElement.dataset.theme==='light'?'dark':'light');
+buildControls(); render();
 </script>
 </body>
 </html>
